@@ -1,5 +1,7 @@
 # Dataset
 chest-xray/
+chest-xray-preprocessed/
+synthetic_images/
 *.zip
 
 # Model Checkpoints / Weights

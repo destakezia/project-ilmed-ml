@@ -70,7 +70,7 @@ Paper asli menggunakan VGG16 sebagai backbone, lalu ditambah 2 block baru:
 | Loss Function | Categorical Crossentropy |
 | Pooling Layer | GlobalAveragePooling2D |
 | Input Size | 224 × 224 × 3 pixel |
-| Batch Size | (sesuaikan dengan RAM) |
+| Batch Size | 32 (Dioptimasi dengan Mixed Precision) |
 | Epochs | 100–300 |
 | Data Split | 80:20 atau 70:30 |
 
@@ -139,49 +139,28 @@ TAHAP 6 — EVALUASI (semua wajib ditampilkan)
 
 ## 💻 Environment & Tools
 
-### Opsi 1: Google Colab (Rekomendasi untuk mulai)
-- Gratis, GPU T4
-- Tidak perlu install
-- Limit sesi ~12 jam (simpan model rutin ke Google Drive)
-- Colab Pro (~Rp60rb/bulan) untuk GPU lebih kuat (disarankan untuk GAN)
-
-### Opsi 2: VS Code + Local
-- Install: Python 3.9+, CUDA (jika ada GPU NVIDIA)
-- Library: TensorFlow/Keras, PyTorch (pilih salah satu)
-- Perlu GPU NVIDIA minimal 6GB VRAM untuk training nyaman
-
-### Library yang Dibutuhkan
-```
-tensorflow>=2.10
-keras
-numpy
-pandas
-matplotlib
-seaborn
-scikit-learn
-opencv-python (cv2)
-Pillow
-grad-cam (pytorch-grad-cam atau tf-keras-vis)
-```
+### Opsi Terpilih: VS Code + Local (AKTIF)
+- **Spesifikasi Laptop**: CPU Intel Core Ultra 7 155H, RAM 32 GB, GPU NVIDIA GeForce RTX 4060 Laptop GPU (8GB VRAM)
+- **Environment**: Python 3.9 (Terverifikasi lokal)
+- **CUDA/GPU**: Aktif (Menggunakan RTX 4060 untuk akselerasi)
+- **Library Terpasang**: TensorFlow, Keras, NumPy, Pandas, Matplotlib, Seaborn, Scikit-Learn, OpenCV (cv2), Pillow
 
 ---
 
-## 📦 Modifikasi Kode dari GitHub Paper
+## 📦 Modifikasi & File Kode Project
 
-File yang **wajib dimodifikasi** dari repo Shamrat777:
+File notebook jupyter yang digunakan dalam project ini:
 
-| File/Bagian | Perubahan |
-|---|---|
-| Jumlah kelas output | `Dense(10)` → `Dense(6)` |
-| Path dataset | Ganti ke path dataset Kaggle baru |
-| Class names/labels | Sesuaikan dengan 6 kelas baru |
-| Data split ratio | 60:20:20 → 80:20 atau 70:30 |
-| Epochs | 300 → 50–100 (sesuaikan komputasi) |
+1. **[LungNet22_Model_Skenario_A_Imbalanced.ipynb](file:///c:/Users/Aisyah%20R.%20Nadjib/Downloads/Semester%204/Ilmu%20Medis/project-ilmed-ml/LungNet22_Model_Skenario_A_Imbalanced.ipynb)** (Skenario A - Data Asli)
+   - Preprocessing: Offline CLAHE (`clipLimit=3.0, tileGridSize=(10,10)`) yang disimpan di folder `./chest-xray-preprocessed/` untuk menghilangkan bottleneck training CPU.
+   - Dataset: Menggabungkan data `val` & `test` secara programmatik menjadi 3.485 file untuk evaluasi, dan `train` sebanyak 14.551 file untuk training.
+   - Evaluasi: Akurasi/Loss, Confusion Matrix, Specificity, ROC/AUC, Grad-CAM, Score-CAM.
 
-File yang **perlu ditambahkan** (tidak ada di paper):
-- Kode GAN (DCGAN atau cGAN) untuk generate data sintetis
-- Score-CAM (paper hanya ada Grad-CAM)
-- Skenario perbandingan Balanced vs Imbalanced
+2. **[LungNet22_Model_Skenario_B_Balanced.ipynb](file:///c:/Users/Aisyah%20R.%20Nadjib/Downloads/Semester%204/Ilmu%20Medis/project-ilmed-ml/LungNet22_Model_Skenario_B_Balanced.ipynb)** (Skenario B - Balanced dengan GAN)
+   - Preprocessing & Dataset: Sama seperti Skenario A (membaca langsung dari folder `./chest-xray-preprocessed/`).
+   - Balancing: Menggunakan **Conditional GAN (cGAN)** untuk men-generate gambar sintetis kelas minoritas agar seimbang dengan kelas mayoritas (`Normal` = 2.671).
+   - Penyimpanan Sintetis: Folder lokal `./synthetic_images/` (dibuat secara otomatis).
+   - Training & Evaluasi: Melatih classifier LungNet22 pada dataset seimbang dan mengevaluasi dengan metrik lengkap + visualisasi CAM.
 
 ---
 
